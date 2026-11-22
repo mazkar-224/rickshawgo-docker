@@ -3,6 +3,7 @@
 #
 # Usage (on the VM, from the repository clone in /opt/rickshawgo):
 #   sudo ./scripts/deploy.sh TAG          TAG = an image tag built by CI, e.g. sha-1a2b3c4 (or latest)
+#   sudo SKIP_PULL=1 ./scripts/deploy.sh TAG   use an image that only exists on this machine (testing)
 #
 # What it does:
 #   1. pulls ghcr.io/mazkar-224/rickshawgo-docker:TAG   (if this fails, nothing has changed)
@@ -34,8 +35,14 @@ mkdir -p "$STATE_DIR"
 PREV="$(cat "$STATE" 2>/dev/null || true)"
 say "Live tag now: ${PREV:-none}   ->   deploying: $TAG"
 
-say "Pulling $IMAGE:$TAG"
-docker pull --quiet "$IMAGE:$TAG" >/dev/null || fail "could not pull $IMAGE:$TAG: nothing was changed"
+if [ "${SKIP_PULL:-0}" = 1 ]; then
+    # for testing an image built on this machine (it is never in the registry)
+    docker image inspect "$IMAGE:$TAG" >/dev/null 2>&1 || fail "SKIP_PULL=1 but $IMAGE:$TAG is not on this machine"
+    say "Using the local image $IMAGE:$TAG (SKIP_PULL=1)"
+else
+    say "Pulling $IMAGE:$TAG"
+    docker pull --quiet "$IMAGE:$TAG" >/dev/null || fail "could not pull $IMAGE:$TAG: nothing was changed"
+fi
 
 for svc in api-1 api-2; do
     say "Updating $svc"
