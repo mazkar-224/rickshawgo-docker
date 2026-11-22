@@ -24,10 +24,14 @@ mkdir -p "$CA_DIR" "$OUT_DIR"
 chmod 700 "$CA_DIR"
 umask 077
 
+# P-256 keys with a NAMED curve. (macOS LibreSSL's "req -newkey ec" writes explicit curve
+# parameters, which OpenSSL 3 clients reject: "Certificate public key has explicit ECC parameters".)
+new_key() { openssl ecparam -name prime256v1 -genkey -noout -param_enc named_curve -out "$1"; }
+
 if [ ! -f "$CA_DIR/ca.key" ]; then
     echo "==> Creating the lab root CA in $CA_DIR (valid 5 years)"
-    openssl req -x509 -new -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes \
-        -keyout "$CA_DIR/ca.key" -out "$CA_DIR/ca.crt" -days 1825 \
+    new_key "$CA_DIR/ca.key"
+    openssl req -x509 -new -key "$CA_DIR/ca.key" -out "$CA_DIR/ca.crt" -days 1825 -sha256 \
         -subj "/O=Azkar DevOps Lab/CN=Azkar Lab Root CA" \
         -addext "basicConstraints=critical,CA:TRUE,pathlen:0" \
         -addext "keyUsage=critical,keyCertSign,cRLSign"
@@ -37,8 +41,8 @@ san=""
 for d in "${DOMAINS[@]}"; do san="${san:+$san,}DNS:$d"; done
 
 echo "==> Issuing a certificate for: ${DOMAINS[*]} (valid 397 days)"
-openssl req -new -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -nodes \
-    -keyout "$OUT_DIR/privkey.pem" -out "$OUT_DIR/server.csr" -subj "/CN=${DOMAINS[0]}"
+new_key "$OUT_DIR/privkey.pem"
+openssl req -new -key "$OUT_DIR/privkey.pem" -out "$OUT_DIR/server.csr" -subj "/CN=${DOMAINS[0]}"
 openssl x509 -req -in "$OUT_DIR/server.csr" -CA "$CA_DIR/ca.crt" -CAkey "$CA_DIR/ca.key" \
     -CAcreateserial -out "$OUT_DIR/server.crt" -days 397 -sha256 \
     -extfile <(printf 'subjectAltName=%s\nbasicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature\nextendedKeyUsage=serverAuth\n' "$san")
