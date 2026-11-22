@@ -1,0 +1,11 @@
+==> Creating the lab root CA in ~/Downloads/assignments/Assignment-4/lab-ca (valid 5 years)
+==> Issuing a certificate for: rickshawgo.azkar.test (valid 397 days)
+Signature ok
+subject=/CN=rickshawgo.azkar.test
+Getting CA Private Key
+~/Downloads/assignments/Assignment-4/lab-ca/issued/server.crt: OK
+subject= /CN=rickshawgo.azkar.test
+issuer= /O=Azkar DevOps Lab/CN=Azkar Lab Root CA
+notAfter=Dec 24 15:36:42 2027 GMT
+            X509v3 Subject Alternative Name: 
+                DNS:rickshawgo.azkar.test

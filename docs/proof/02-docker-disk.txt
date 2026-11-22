@@ -1,0 +1,37 @@
+Created symlink /etc/systemd/system/local-fs.target.wants/var-lib-docker\x2ddisk.mount → /etc/systemd/system/var-lib-docker\x2ddisk.mount.
+Created symlink /etc/systemd/system/local-fs.target.wants/var-lib-docker.mount → /etc/systemd/system/var-lib-docker.mount.
+Created symlink /etc/systemd/system/local-fs.target.wants/var-lib-containerd.mount → /etc/systemd/system/var-lib-containerd.mount.
+active
+active
+Hello from Docker!
+Unable to find image 'nginx:alpine' locally
+alpine: Pulling from library/nginx
+04c3905a997c: Pulling fs layer
+881fc932939e: Pulling fs layer
+c4f3d97811f6: Pulling fs layer
+77a3bfea78f5: Pulling fs layer
+7cb374baf968: Pulling fs layer
+4c8c172c6586: Pulling fs layer
+1dc588c89da1: Pulling fs layer
+61d8f4c85a74: Pulling fs layer
+79979b969278: Download complete
+04c3905a997c: Download complete
+33247e384332: Download complete
+77a3bfea78f5: Download complete
+7cb374baf968: Download complete
+4c8c172c6586: Download complete
+61d8f4c85a74: Download complete
+881fc932939e: Download complete
+1dc588c89da1: Download complete
+881fc932939e: Pull complete
+04c3905a997c: Pull complete
+77a3bfea78f5: Pull complete
+7cb374baf968: Pull complete
+4c8c172c6586: Pull complete
+61d8f4c85a74: Pull complete
+1dc588c89da1: Pull complete
+c4f3d97811f6: Download complete
+c4f3d97811f6: Pull complete
+Digest: sha256:fb4658584bd9a916ffb6f6e365f97c25cfdb2923801f551ea08356e695f14ff7
+Status: Downloaded newer image for nginx:alpine
+port mapping test: 200

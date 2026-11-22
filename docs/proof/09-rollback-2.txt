@@ -1,0 +1,7 @@
+==> Live tag now: sha-a74aace   ->   deploying: broken-test
+==> Using the local image ghcr.io/mazkar-224/rickshawgo-docker:broken-test (SKIP_PULL=1)
+==> Updating api-1
+ERROR: api-1 did not become healthy on broken-test
+ERROR: rolling api-1 back to sha-a74aace
+ERROR: deployment of broken-test stopped; the other container is still on sha-a74aace
+deploy exit code: 1

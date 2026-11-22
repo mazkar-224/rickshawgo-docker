@@ -1,0 +1,10 @@
+booted at: Sun Nov 22 20:42:19 2026
+docker: active
+containerd: active
+nginx: active
+NAMES                IMAGE                                              STATUS                    PORTS
+rickshawgo-api-1-1   ghcr.io/mazkar-224/rickshawgo-docker:sha-a74aace   Up 13 seconds (healthy)   127.0.0.1:3101->3000/tcp
+rickshawgo-api-2-1   ghcr.io/mazkar-224/rickshawgo-docker:sha-a74aace   Up 13 seconds (healthy)   127.0.0.1:3102->3000/tcp
+{"status":"ok","version":"2.2","instance":"api-2","port":3000,"pid":7}
+{"status":"ok","version":"2.2","instance":"api-2","port":3000,"pid":7}
+from the Mac: {"total":4,"free":3}

@@ -1,0 +1,29 @@
+fatal: detected dubious ownership in repository at '/opt/rickshawgo'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /opt/rickshawgo
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+==> Live tag now: sha-044fb9f   ->   deploying: sha-a74aace
+==> Pulling ghcr.io/mazkar-224/rickshawgo-docker:sha-a74aace
+==> Updating api-1
+ Container rickshawgo-api-1-1 Recreate 
+ Container rickshawgo-api-1-1 Recreated 
+ Container rickshawgo-api-1-1 Starting 
+ Container rickshawgo-api-1-1 Started 
+ Container rickshawgo-api-1-1 Waiting 
+ Container rickshawgo-api-1-1 Healthy 
+==> api-1 is healthy on sha-a74aace; waiting 3s so Nginx uses it again
+==> Updating api-2
+ Container rickshawgo-api-2-1 Recreate 
+ Container rickshawgo-api-2-1 Recreated 
+ Container rickshawgo-api-2-1 Starting 
+ Container rickshawgo-api-2-1 Started 
+ Container rickshawgo-api-2-1 Waiting 
+ Container rickshawgo-api-2-1 Healthy 
+==> api-2 is healthy on sha-a74aace; waiting 3s so Nginx uses it again
+==> Running containers:
+SERVICE   IMAGE                                              STATUS
+api-1     ghcr.io/mazkar-224/rickshawgo-docker:sha-a74aace   Up 17 seconds (healthy)
+api-2     ghcr.io/mazkar-224/rickshawgo-docker:sha-a74aace   Up 8 seconds (healthy)
+==> Through Nginx + TLS: {"status":"ok","version":"2.2","instance":"api-1","port":3000,"pid":7}
+==> Deployed sha-a74aace

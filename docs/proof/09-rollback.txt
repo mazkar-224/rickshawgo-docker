@@ -1,0 +1,32 @@
+2c744c6 deploy.sh: SKIP_PULL=1 to deploy a locally built image (used to test the automatic rollback)
+### a broken build: the app runs, but its health check always fails
+==> Live tag now: sha-a74aace   ->   deploying: broken-test
+==> Using the local image ghcr.io/mazkar-224/rickshawgo-docker:broken-test (SKIP_PULL=1)
+==> Updating api-1
+ Container rickshawgo-api-1-1 Recreate 
+ Container rickshawgo-api-1-1 Recreated 
+ Container rickshawgo-api-1-1 Starting 
+ Container rickshawgo-api-1-1 Started 
+ Container rickshawgo-api-1-1 Waiting 
+container rickshawgo-api-1-1 is unhealthy
+ERROR: api-1 did not become healthy on broken-test
+api-1-1  | RickshawGo API v2.2 listening on 0.0.0.0:3000
+api-1-1  | 172.18.0.1 - - [22/Nov/2026:15:41:07 +0000] "GET /api/health HTTP/1.1" 200 70 "-" "curl/8.7.1"
+api-1-1  | 172.18.0.1 - - [22/Nov/2026:15:41:07 +0000] "GET /api/health HTTP/1.1" 200 70 "-" "curl/8.7.1"
+api-1-1  | 172.18.0.1 - - [22/Nov/2026:15:41:07 +0000] "GET /api/health HTTP/1.1" 200 70 "-" "curl/8.7.1"
+api-1-1  | 172.18.0.1 - - [22/Nov/2026:15:41:08 +0000] "GET /api/health HTTP/1.1" 200 70 "-" "curl/8.7.1"
+api-1-1  | 172.18.0.1 - - [22/Nov/2026:15:41:08 +0000] "GET /api/health HTTP/1.1" 200 70 "-" "curl/8.7.1"
+api-1-1  | 172.18.0.1 - - [22/Nov/2026:15:41:08 +0000] "GET /api/health HTTP/1.1" 200 70 "-" "curl/8.7.1"
+ERROR: rolling api-1 back to sha-a74aace
+ Container rickshawgo-api-1-1 Recreate 
+ Container rickshawgo-api-1-1 Recreated 
+ Container rickshawgo-api-1-1 Starting 
+ Container rickshawgo-api-1-1 Started 
+ Container rickshawgo-api-1-1 Waiting 
+ Container rickshawgo-api-1-1 Healthy 
+ERROR: deployment of broken-test stopped; the other container is still on sha-a74aace
+deploy exit code: 1
+### after the failed deploy:
+api-1 ghcr.io/mazkar-224/rickshawgo-docker:sha-a74aace Up 5 seconds (healthy)
+api-2 ghcr.io/mazkar-224/rickshawgo-docker:sha-a74aace Up About a minute (healthy)
+recorded live tag: sha-a74aace

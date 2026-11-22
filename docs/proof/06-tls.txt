@@ -1,0 +1,25 @@
+c171fbb make-cert: named-curve EC keys (OpenSSL 3 rejects explicit ECC parameters); new lab CA
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+### HTTPS with the lab CA (no -k):
+{"status":"ok","version":"2.2","instance":"api-1","port":3000,"pid":7}
+{"status":"ok","version":"2.2","instance":"api-2","port":3000,"pid":7}
+{"status":"ok","version":"2.2","instance":"api-1","port":3000,"pid":7}
+{"status":"ok","version":"2.2","instance":"api-2","port":3000,"pid":7}
+### HTTP -> HTTPS redirect:
+301 -> https://rickshawgo.azkar.test/api/rickshaws/count
+### security headers:
+HTTP/2 200 
+server: nginx/1.24.0 (Ubuntu)
+strict-transport-security: max-age=31536000
+x-content-type-options: nosniff
+x-frame-options: DENY
+referrer-policy: no-referrer
+### TLS handshake:
+subject=CN = rickshawgo.azkar.test
+issuer=O = Azkar DevOps Lab, CN = Azkar Lab Root CA
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Verify return code: 0 (ok)
+### unknown name is refused:
+unrecognized name
+### old TLS 1.1 is refused:
+no protocols available

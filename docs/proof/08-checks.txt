@@ -1,0 +1,11 @@
+### repo on the VM: a74aace Nginx: hide the version (server_tokens off)
+### server_tokens in live config: 2
+server: nginx
+### a bad deploy (tag that doesn't exist) changes nothing:
+==> Live tag now: sha-a74aace   ->   deploying: sha-0000000
+==> Pulling ghcr.io/mazkar-224/rickshawgo-docker:sha-0000000
+Error response from daemon: failed to resolve reference "ghcr.io/mazkar-224/rickshawgo-docker:sha-0000000": ghcr.io/mazkar-224/rickshawgo-docker:sha-0000000: not found
+ERROR: could not pull ghcr.io/mazkar-224/rickshawgo-docker:sha-0000000: nothing was changed
+exit code: 1
+api-1 ghcr.io/mazkar-224/rickshawgo-docker:sha-a74aace Up 37 seconds (healthy)
+api-2 ghcr.io/mazkar-224/rickshawgo-docker:sha-a74aace Up 28 seconds (healthy)

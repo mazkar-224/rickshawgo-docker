@@ -1,0 +1,30 @@
+==> Live tag now: none   ->   deploying: sha-044fb9f
+==> Pulling ghcr.io/mazkar-224/rickshawgo-docker:sha-044fb9f
+==> Updating api-1
+ Network rickshawgo_default Creating 
+ Network rickshawgo_default Created 
+ Container rickshawgo-api-1-1 Creating 
+ Container rickshawgo-api-1-1 Created 
+ Container rickshawgo-api-1-1 Starting 
+ Container rickshawgo-api-1-1 Started 
+ Container rickshawgo-api-1-1 Waiting 
+ Container rickshawgo-api-1-1 Healthy 
+==> api-1 is healthy on sha-044fb9f; waiting 3s so Nginx uses it again
+==> Updating api-2
+ Container rickshawgo-api-2-1 Creating 
+ Container rickshawgo-api-2-1 Created 
+ Container rickshawgo-api-2-1 Starting 
+ Container rickshawgo-api-2-1 Started 
+ Container rickshawgo-api-2-1 Waiting 
+ Container rickshawgo-api-2-1 Healthy 
+==> api-2 is healthy on sha-044fb9f; waiting 3s so Nginx uses it again
+==> Running containers:
+SERVICE   IMAGE                                              STATUS
+api-1     ghcr.io/mazkar-224/rickshawgo-docker:sha-044fb9f   Up 17 seconds (healthy)
+api-2     ghcr.io/mazkar-224/rickshawgo-docker:sha-044fb9f   Up 8 seconds (healthy)
+==> Through Nginx + TLS: 
+==> Deployed sha-044fb9f
+### containers
+NAMES                IMAGE                                              STATUS                    PORTS
+rickshawgo-api-2-1   ghcr.io/mazkar-224/rickshawgo-docker:sha-044fb9f   Up 8 seconds (healthy)    127.0.0.1:3102->3000/tcp
+rickshawgo-api-1-1   ghcr.io/mazkar-224/rickshawgo-docker:sha-044fb9f   Up 17 seconds (healthy)   127.0.0.1:3101->3000/tcp

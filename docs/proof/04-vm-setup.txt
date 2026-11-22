@@ -1,0 +1,12 @@
+### 1. the secret: root-only env file (same rotated key as the systemd version)
+-rw------- 1 root root 28 Nov 22 20:35 /etc/rickshawgo/app.env
+MAPS_KEY=<hidden>
+### 2. the repository (public, no credentials needed)
+044fb9f Tests: use an explicit glob (Node 24 reads 'node --test test/' as one file)
+### 3. TLS certificate
+total 8
+-rw-r--r-- 1 root root 960 Nov 22 20:35 fullchain.pem
+-rw------- 1 root root 570 Nov 22 20:35 privkey.pem
+### 4. Nginx
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
