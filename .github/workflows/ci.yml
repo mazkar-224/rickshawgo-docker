@@ -1,0 +1,138 @@
+name: CI
+
+# Every push and pull request: test the code, lint the Dockerfile and the scripts, build the image,
+# smoke-test the real container and scan it for vulnerabilities.
+# Pushes to main (and v* tags) also publish the image to GitHub Container Registry (ghcr.io).
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+
+jobs:
+  test:
+    name: Unit tests (Node 24)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: npm ci
+      - run: npm test
+
+  lint:
+    name: Lint Dockerfile, Compose and scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: hadolint (Dockerfile best practices)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: app/Dockerfile
+      - name: shellcheck
+        run: shellcheck scripts/*.sh
+      - name: docker compose config is valid
+        run: ENV_FILE=app/.env.example docker compose config --quiet
+
+  build:
+    name: Build, smoke-test and scan the image
+    needs: [test, lint]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: docker/setup-buildx-action@v3
+      - name: Build the image
+        uses: docker/build-push-action@v6
+        with:
+          context: app
+          load: true
+          tags: rickshawgo-api:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Smoke test the real container
+        run: |
+          docker run -d --name api -e MAPS_KEY=not-a-real-key-ci-only -p 127.0.0.1:3000:3000 rickshawgo-api:ci
+          for i in $(seq 1 30); do
+            status="$(docker inspect -f '{{.State.Health.Status}}' api)"
+            [ "$status" = healthy ] && break
+            sleep 1
+          done
+          echo "container health: $status"
+          [ "$status" = healthy ]
+          curl -sf http://127.0.0.1:3000/api/health
+          curl -sf http://127.0.0.1:3000/api/rickshaws/count
+          test "$(docker exec api id -u)" != 0 && echo "runs as uid $(docker exec api id -u), not root"
+      - name: The container stops cleanly on SIGTERM (no 10 s kill)
+        run: |
+          start=$(date +%s); docker stop api; took=$(( $(date +%s) - start ))
+          echo "docker stop took ${took}s"; docker logs api 2>&1 | tail -2
+          [ "$took" -lt 5 ]
+      - name: Show container logs
+        if: failure()
+        run: docker logs api || true
+      - name: Vulnerability scan (Trivy, HIGH/CRITICAL with a fix available)
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest \
+            image --quiet --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed rickshawgo-api:ci
+
+  publish:
+    name: Publish to ghcr.io
+    needs: [build]
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write          # only this job may push images
+    steps:
+      - uses: actions/checkout@v5
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Tags and labels
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=sha,prefix=sha-,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=semver,pattern={{version}}
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: app
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          provenance: mode=max
+          sbom: true
+      - name: Summary
+        run: |
+          {
+            echo "### Image published"
+            echo '```'
+            echo "${{ steps.meta.outputs.tags }}"
+            echo '```'
+            echo "Deploy on the VM: \`sudo /opt/rickshawgo/scripts/deploy.sh sha-${GITHUB_SHA::7}\`"
+          } >> "$GITHUB_STEP_SUMMARY"

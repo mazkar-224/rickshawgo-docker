@@ -1,0 +1,12 @@
+# keep the base image, npm packages and GitHub Actions up to date (weekly pull requests)
+version: 2
+updates:
+  - package-ecosystem: docker
+    directory: /app
+    schedule: { interval: weekly }
+  - package-ecosystem: npm
+    directory: /app
+    schedule: { interval: weekly }
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly }

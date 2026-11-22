@@ -1,0 +1,10 @@
+# keep the build context small and never send secrets into an image layer
+node_modules
+npm-debug.log*
+.env
+.env.*
+test
+Dockerfile
+.dockerignore
+*.md
+.git

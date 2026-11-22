@@ -1,0 +1,49 @@
+# RickshawGo API on the VM: two identical containers behind Nginx (zero-downtime rolling updates).
+#
+# The image comes from GitHub Container Registry, built and tested by GitHub Actions.
+#   IMAGE  default ghcr.io/mazkar-224/rickshawgo-docker
+#   TAG    which build to run (scripts/deploy.sh sets it, for example sha-1a2b3c4)
+#
+# The secret MAPS_KEY is NOT in this repository: it is read from ENV_FILE on the server
+# (default /etc/rickshawgo/app.env, root:root 600).
+
+name: rickshawgo
+
+x-api: &api
+  image: ${IMAGE:-ghcr.io/mazkar-224/rickshawgo-docker}:${TAG:-latest}
+  init: true                          # tiny init as PID 1: forwards signals, reaps zombies
+  restart: unless-stopped             # comes back after a crash and after a reboot
+  env_file:
+    - ${ENV_FILE:-/etc/rickshawgo/app.env}
+  environment:
+    HOST: 0.0.0.0
+    PORT: "3000"
+  read_only: true                     # the container's file system is read-only...
+  tmpfs:
+    - /tmp                            # ...except an in-memory /tmp
+  cap_drop: [ALL]                     # no Linux capabilities needed for a web API on port 3000
+  security_opt:
+    - no-new-privileges:true
+  deploy:
+    resources:
+      limits:
+        cpus: "0.50"
+        memory: 256M
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  api-1:
+    <<: *api
+    hostname: api-1
+    ports:
+      - "127.0.0.1:3101:3000"         # only Nginx on this machine can reach it
+
+  api-2:
+    <<: *api
+    hostname: api-2
+    ports:
+      - "127.0.0.1:3102:3000"
